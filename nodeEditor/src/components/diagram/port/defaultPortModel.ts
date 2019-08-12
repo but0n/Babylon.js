@@ -1,4 +1,4 @@
-import { LinkModel, PortModel } from "storm-react-diagrams";
+import { LinkModel, PortModel } from "@projectstorm/react-diagrams";
 import { Nullable } from 'babylonjs/types';
 import { NodeMaterialConnectionPoint } from 'babylonjs/Materials/Node/nodeMaterialBlockConnectionPoint';
 import { DefaultNodeModel } from '../defaultNodeModel';
@@ -11,7 +11,7 @@ export class DefaultPortModel extends PortModel {
 	/**
 	 * If the port is input or output
 	 */
-    public position: string | "input" | "output";
+    public portPosition: string | "input" | "output";
 	/**
 	 * What the port is connected to
 	 */
@@ -22,8 +22,8 @@ export class DefaultPortModel extends PortModel {
     static idCounter = 0;
 
     constructor(name: string, type: string = "input") {
-        super(name, "generic");
-        this.position = type;
+        super({name: name});
+        this.portPosition = type;
         DefaultPortModel.idCounter++;
     }
 
@@ -37,7 +37,7 @@ export class DefaultPortModel extends PortModel {
 
     syncWithNodeMaterialConnectionPoint(connection: NodeMaterialConnectionPoint) {
         this.connection = connection;
-        this.name = connection.name;
+        this.options.name = connection.name;
     }
 
     getNodeModel() {
@@ -58,12 +58,12 @@ export class DefaultPortModel extends PortModel {
     static SortInputOutput(a: Nullable<DefaultPortModel>, b: Nullable<DefaultPortModel>) {
         if (!a || !b) {
             return null;
-        } else if (a.position == "output" && b.position == "input") {
+        } else if (a.portPosition == "output" && b.portPosition == "input") {
             return {
                 input: b,
                 output: a
             }
-        } else if (b.position == "output" && a.position == "input") {
+        } else if (b.portPosition == "output" && a.portPosition == "input") {
             return {
                 input: a,
                 output: b

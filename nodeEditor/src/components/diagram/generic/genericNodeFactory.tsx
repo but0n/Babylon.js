@@ -1,4 +1,4 @@
-import * as SRD from "storm-react-diagrams";
+import * as SRD from "@projectstorm/react-diagrams";
 import { GenericNodeWidget } from "./genericNodeWidget";
 import { GenericNodeModel } from "./genericNodeModel";
 import * as React from "react";

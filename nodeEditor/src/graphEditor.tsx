@@ -3,7 +3,7 @@ import {
     DiagramModel,
     DiagramWidget,
     LinkModel
-} from "storm-react-diagrams";
+} from "@projectstorm/react-diagrams";
 
 import * as React from "react";
 import { GlobalState } from './globalState';
@@ -543,6 +543,7 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
                         }}
                     >
                         <DiagramWidget className="diagram" deleteKeys={[46]} ref={"test"} 
+                        smart
                         allowLooseLinks={false}
                         inverseZoom={true} 
                         diagramEngine={this._engine} 

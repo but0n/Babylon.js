@@ -1,4 +1,4 @@
-import { BaseWidget, PortState, NodeModel, BaseWidgetProps } from 'storm-react-diagrams';
+import { BaseWidget, PortState, NodeModel, BaseWidgetProps } from "@projectstorm/react-diagrams";
 import * as React from 'react';
 
 

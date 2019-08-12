@@ -1,4 +1,4 @@
-import * as SRD from "storm-react-diagrams";
+import * as SRD from "@projectstorm/react-diagrams";
 import { TextureNodeWidget } from "./textureNodeWidget";
 import { TextureNodeModel } from "./textureNodeModel";
 import * as React from "react";

@@ -1,4 +1,4 @@
-import { NodeModel, DiagramModel } from "storm-react-diagrams";
+import { NodeModel, DiagramModel } from "@projectstorm/react-diagrams";
 import { Nullable } from 'babylonjs/types';
 import { NodeMaterialBlock } from 'babylonjs/Materials/Node/nodeMaterialBlock';
 import { GraphEditor, NodeCreationOptions } from '../../graphEditor';
