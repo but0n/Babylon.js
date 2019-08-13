@@ -20,7 +20,9 @@ export class StandardNodeModel extends NodeModel {
 	 * Constructs the node model
 	 */
     constructor(key: string) {
-        super({name: key});
+        super({
+            type: key
+        });
     }
 
     prepare(options: NodeCreationOptions, nodes: Array<StandardNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {

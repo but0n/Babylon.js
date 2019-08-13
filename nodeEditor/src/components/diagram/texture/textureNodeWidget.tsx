@@ -26,7 +26,7 @@ export class TextureNodeWidget extends React.Component<ITextureNodeWidgetProps> 
         this.state = {};
 
         if (this.props.node) {
-            this.props.node.addListener({
+            this.props.node.registerListener({
                 selectionChanged: () => {
                     let selected = (this.props.node as any).selected;
                     this.props.globalState.onSelectionChangedObservable.notifyObservers(selected ? this.props.node : null);
@@ -37,8 +37,8 @@ export class TextureNodeWidget extends React.Component<ITextureNodeWidgetProps> 
 
     render() {
         // Input/Output ports
-        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, false);
-        var inputPorts = PortHelper.GenerateInputPorts(this.props.node, ["uv"]);
+        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, false, this.props.globalState.diagramEngine);
+        var inputPorts = PortHelper.GenerateInputPorts(this.props.node, ["uv"], false, this.props.globalState.diagramEngine);
 
         return (
             <div className={"diagramBlock texture-block"}>

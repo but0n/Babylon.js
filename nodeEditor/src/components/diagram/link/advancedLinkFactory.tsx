@@ -6,11 +6,10 @@ import { BlockTools } from '../../../blockTools';
 
 export class AdvancedLinkFactory extends DefaultLinkFactory {
 	constructor() {
-		super();
-		this.type = "advanced";
+		super('advanced');
 	}
 
-	getNewInstance(initialConfig?: any): AdvancedLinkModel {
+	generateModel(): AdvancedLinkModel {
 		return new AdvancedLinkModel();
 	}
 
@@ -21,8 +20,7 @@ export class AdvancedLinkFactory extends DefaultLinkFactory {
 		let width = 3;
 
 		return (
-			<S.Path
-				selected={selected}
+			<path
 				strokeWidth={width}
 				stroke={color}
 				d={path}

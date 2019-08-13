@@ -1,39 +1,39 @@
-import { NodeModel } from "@projectstorm/react-diagrams";
+import { NodeModel, PortWidget, DiagramEngine } from "@projectstorm/react-diagrams";
 import * as React from 'react';
 
 
-export interface IDefaultPortWidgetProps extends BaseWidgetProps {
+export interface IDefaultPortWidgetProps {
 	name: string;
-	node: NodeModel;
+    node: NodeModel;
+    engine: DiagramEngine;
     style: any;
+    direction: string;
 }
 
-export class DefaultPortWidget extends BaseWidget<IDefaultPortWidgetProps, PortState> {
+export class DefaultPortWidget extends React.Component<IDefaultPortWidgetProps, {selected: boolean}> {
     constructor(props: IDefaultPortWidgetProps) {
-		super("srd-port", props);
+		super(props);
 		this.state = {
 			selected: false
 		};
 	}
 
-	getClassName() {
-		return "port " + super.getClassName() + (this.state.selected ? this.bem("--selected") : "");
-	}
-
 	render() {
 		return (
+            <PortWidget
+                port={this.props.node.getPort(this.props.direction)!}
+                engine={this.props.engine} >
 			<div
-				style={this.props.style}
-				{...this.getProps()}
+                className="srd-port"
+                style={this.props.style}
 				onMouseEnter={() => {
 					this.setState({ selected: true });
 				}}
 				onMouseLeave={() => {
 					this.setState({ selected: false });
 				}}
-				data-name={this.props.name}
-				data-nodeid={this.props.node.getID()}
 			/>
+            </PortWidget>
 		);
 	}
 }

@@ -17,7 +17,6 @@ import { Portal } from './portal';
 import { TextureNodeFactory } from './components/diagram/texture/textureNodeFactory';
 import { StandardNodeModel } from './components/diagram/standardNodeModel';
 import { TextureNodeModel } from './components/diagram/texture/textureNodeModel';
-import { DefaultPortModel } from './components/diagram/port/defaultPortModel';
 import { InputNodeFactory } from './components/diagram/input/inputNodeFactory';
 import { InputNodeModel } from './components/diagram/input/inputNodeModel';
 import { TextureBlock } from 'babylonjs/Materials/Node/Blocks/Dual/textureBlock';
@@ -160,13 +159,15 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         // setup the diagram engine
         this._engine = createEngine();
 
-        this._engine.getLayerFactories().registerFactory(new GenericNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new TextureNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new LightNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new InputNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new RemapNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new TrigonometryNodeFactory(this.props.globalState));
-        this._engine.getLayerFactories().registerFactory(new AdvancedLinkFactory());
+        this.props.globalState.diagramEngine = this._engine;
+
+        this._engine.getNodeFactories().registerFactory(new GenericNodeFactory(this.props.globalState));
+        this._engine.getNodeFactories().registerFactory(new TextureNodeFactory(this.props.globalState));
+        this._engine.getNodeFactories().registerFactory(new LightNodeFactory(this.props.globalState));
+        this._engine.getNodeFactories().registerFactory(new InputNodeFactory(this.props.globalState));
+        this._engine.getNodeFactories().registerFactory(new RemapNodeFactory(this.props.globalState));
+        this._engine.getNodeFactories().registerFactory(new TrigonometryNodeFactory(this.props.globalState));
+        this._engine.getLinkFactories().registerFactory(new AdvancedLinkFactory());
 
         this.props.globalState.onRebuildRequiredObservable.add(() => {
             if (this.props.globalState.nodeMaterial) {
@@ -284,111 +285,112 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         this._blocks = [];
 
         // Listen to events
-        this._model.addListener({
-            nodesUpdated: (e) => {                
-                if (!e.isCreated) {
-                    // Block is deleted
-                    let targetBlock = (e.node as GenericNodeModel).block;
 
-                    if (targetBlock) {
-                        let attachedBlockIndex = this.props.globalState.nodeMaterial!.attachedBlocks.indexOf(targetBlock);
-                        if (attachedBlockIndex > -1) {
-                            this.props.globalState.nodeMaterial!.attachedBlocks.splice(attachedBlockIndex, 1);
-                        }
+        // this._model.registerListener({
+        //     nodesUpdated: (e) => {                
+        //         if (!e.isCreated) {
+        //             // Block is deleted
+        //             let targetBlock = (e.node as GenericNodeModel).block;
 
-                        if (targetBlock.isFinalMerger) {
-                            this.props.globalState.nodeMaterial!.removeOutputNode(targetBlock);
-                        }
-                        let blockIndex = this._blocks.indexOf(targetBlock);
+        //             if (targetBlock) {
+        //                 let attachedBlockIndex = this.props.globalState.nodeMaterial!.attachedBlocks.indexOf(targetBlock);
+        //                 if (attachedBlockIndex > -1) {
+        //                     this.props.globalState.nodeMaterial!.attachedBlocks.splice(attachedBlockIndex, 1);
+        //                 }
 
-                        if (blockIndex > -1) {
-                            this._blocks.splice(blockIndex, 1);
-                        }
-                    }                  
+        //                 if (targetBlock.isFinalMerger) {
+        //                     this.props.globalState.nodeMaterial!.removeOutputNode(targetBlock);
+        //                 }
+        //                 let blockIndex = this._blocks.indexOf(targetBlock);
 
-                    this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
-                }
-            },
-            linksUpdated: (e) => {
-                if (!e.isCreated) {
-                    // Link is deleted
-                    this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
-                    let sourcePort = e.link.sourcePort as DefaultPortModel;
+        //                 if (blockIndex > -1) {
+        //                     this._blocks.splice(blockIndex, 1);
+        //                 }
+        //             }                  
 
-                    var link = DefaultPortModel.SortInputOutput(sourcePort, e.link.targetPort as DefaultPortModel);
-                    if (link) {
-                        if (link.input.connection && link.output.connection) {
-                            if (link.input.connection.connectedPoint) {
-                                // Disconnect standard nodes
-                                link.output.connection.disconnectFrom(link.input.connection);
-                                link.input.syncWithNodeMaterialConnectionPoint(link.input.connection);
-                                link.output.syncWithNodeMaterialConnectionPoint(link.output.connection);
-                            }
-                        }
-                    } else {
-                        if (!e.link.targetPort && e.link.sourcePort && (e.link.sourcePort as DefaultPortModel).position === "input") {
-                            // Drag from input port, we are going to build an input for it                            
-                            let input = e.link.sourcePort as DefaultPortModel;
-                            let nodeModel = this.addValueNode(BlockTools.GetStringFromConnectionNodeType(input.connection!.type));
-                            let link = nodeModel.ports.output.link(input);
+        //             this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
+        //         }
+        //     },
+        //     linksUpdated: (e) => {
+        //         if (!e.isCreated) {
+        //             // Link is deleted
+        //             this.props.globalState.onSelectionChangedObservable.notifyObservers(null);
+        //             let sourcePort = e.link.sourcePort as DefaultPortModel;
 
-                            nodeModel.setPosition(e.link.points[1].x - this.NodeWidth, e.link.points[1].y);
+        //             var link = DefaultPortModel.SortInputOutput(sourcePort, e.link.targetPort as DefaultPortModel);
+        //             if (link) {
+        //                 if (link.input.connection && link.output.connection) {
+        //                     if (link.input.connection.connectedPoint) {
+        //                         // Disconnect standard nodes
+        //                         link.output.connection.disconnectFrom(link.input.connection);
+        //                         link.input.syncWithNodeMaterialConnectionPoint(link.input.connection);
+        //                         link.output.syncWithNodeMaterialConnectionPoint(link.output.connection);
+        //                     }
+        //                 }
+        //             } else {
+        //                 if (!e.link.targetPort && e.link.sourcePort && (e.link.sourcePort as DefaultPortModel).position === "input") {
+        //                     // Drag from input port, we are going to build an input for it                            
+        //                     let input = e.link.sourcePort as DefaultPortModel;
+        //                     let nodeModel = this.addValueNode(BlockTools.GetStringFromConnectionNodeType(input.connection!.type));
+        //                     let link = nodeModel.ports.output.link(input);
 
-                            setTimeout(() => {
-                                this._model.addLink(link);
-                                input.syncWithNodeMaterialConnectionPoint(input.connection!);
-                                nodeModel.ports.output.syncWithNodeMaterialConnectionPoint(nodeModel.ports.output.connection!);                                 
+        //                     nodeModel.setPosition(e.link.points[1].x - this.NodeWidth, e.link.points[1].y);
 
-                                this.forceUpdate();
-                            }, 1);
+        //                     setTimeout(() => {
+        //                         this._model.addLink(link);
+        //                         input.syncWithNodeMaterialConnectionPoint(input.connection!);
+        //                         nodeModel.ports.output.syncWithNodeMaterialConnectionPoint(nodeModel.ports.output.connection!);                                 
+
+        //                         this.forceUpdate();
+        //                     }, 1);
                            
-                            nodeModel.ports.output.connection!.connectTo(input.connection!);
-                            this.props.globalState.onRebuildRequiredObservable.notifyObservers();
-                        }
-                    }
-                    this.forceUpdate();
-                    return;
-                }
+        //                     nodeModel.ports.output.connection!.connectTo(input.connection!);
+        //                     this.props.globalState.onRebuildRequiredObservable.notifyObservers();
+        //                 }
+        //             }
+        //             this.forceUpdate();
+        //             return;
+        //         }
 
-                e.link.addListener({
-                    sourcePortChanged: () => {
-                    },
-                    targetPortChanged: () => {
-                        // Link is created with a target port
-                        var link = DefaultPortModel.SortInputOutput(e.link.sourcePort as DefaultPortModel, e.link.targetPort as DefaultPortModel);
+        //         e.link.registerListener({
+        //             sourcePortChanged: () => {
+        //             },
+        //             targetPortChanged: () => {
+        //                 // Link is created with a target port
+        //                 var link = DefaultPortModel.SortInputOutput(e.link.sourcePort as DefaultPortModel, e.link.targetPort as DefaultPortModel);
 
-                        if (link) {
-                            if (link.output.connection && link.input.connection) {
-                                // Disconnect previous connection
-                                for (var key in link.input.links) {
-                                    let other = link.input.links[key];
+        //                 if (link) {
+        //                     if (link.output.connection && link.input.connection) {
+        //                         // Disconnect previous connection
+        //                         for (var key in link.input.links) {
+        //                             let other = link.input.links[key];
 
-                                    if ((other.getSourcePort() as DefaultPortModel).connection  !== (link.output as DefaultPortModel).connection && 
-                                        (other.getTargetPort() as DefaultPortModel).connection  !== (link.output as DefaultPortModel).connection
-                                    ) {
-                                        other.remove();
-                                    }
-                                }
+        //                             if ((other.getSourcePort() as DefaultPortModel).connection  !== (link.output as DefaultPortModel).connection && 
+        //                                 (other.getTargetPort() as DefaultPortModel).connection  !== (link.output as DefaultPortModel).connection
+        //                             ) {
+        //                                 other.remove();
+        //                             }
+        //                         }
 
-                                try {
-                                    link.output.connection.connectTo(link.input.connection);
-                                }        
-                                catch (err) {
-                                    link.output.remove();
-                                    this.props.globalState.onLogRequiredObservable.notifyObservers(new LogEntry(err, true));
-                                    this.props.globalState.onErrorMessageDialogRequiredObservable.notifyObservers(err);
-                                }
+        //                         try {
+        //                             link.output.connection.connectTo(link.input.connection);
+        //                         }        
+        //                         catch (err) {
+        //                             link.output.remove();
+        //                             this.props.globalState.onLogRequiredObservable.notifyObservers(new LogEntry(err, true));
+        //                             this.props.globalState.onErrorMessageDialogRequiredObservable.notifyObservers(err);
+        //                         }
 
-                                this.forceUpdate();
-                            }
-                            if (this.props.globalState.nodeMaterial) {
-                                this.buildMaterial();
-                            }
-                        }
-                    }
-                })
-            }
-        });
+        //                         this.forceUpdate();
+        //                     }
+        //                     if (this.props.globalState.nodeMaterial) {
+        //                         this.buildMaterial();
+        //                     }
+        //                 }
+        //             }
+        //         })
+        //     }
+        // });
 
         // Load graph of nodes from the material
         if (this.props.globalState.nodeMaterial) {
@@ -487,7 +489,7 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
 
     emitNewBlock(event: React.DragEvent<HTMLDivElement>) {
         var data = event.dataTransfer.getData("babylonjs-material-node") as string;
-        let nodeModel: Nullable<DefaultNodeModel> = null;
+        let nodeModel: Nullable<StandardNodeModel> = null;
 
         if (data.indexOf("Block") === -1) {
             nodeModel = this.addValueNode(data);

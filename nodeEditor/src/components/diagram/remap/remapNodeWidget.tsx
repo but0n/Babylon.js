@@ -26,7 +26,7 @@ export class RemapNodeWidget extends React.Component<RemapNodeWidgetProps> {
         this.state = {};
 
         if (this.props.node) {
-            this.props.node.addListener({
+            this.props.node.registerListener({
                 selectionChanged: () => {
                     let selected = (this.props.node as any).selected;
                     this.props.globalState.onSelectionChangedObservable.notifyObservers(selected ? this.props.node : null);
@@ -48,8 +48,8 @@ export class RemapNodeWidget extends React.Component<RemapNodeWidgetProps> {
     }
 
     render() {
-        var inputPorts = PortHelper.GenerateInputPorts(this.props.node, undefined, true);
-        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, true);
+        var inputPorts = PortHelper.GenerateInputPorts(this.props.node, null, true, this.props.globalState.diagramEngine);
+        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, true, this.props.globalState.diagramEngine);
         let remapBlock = this.props.node!.block! as RemapBlock;
 
         return (

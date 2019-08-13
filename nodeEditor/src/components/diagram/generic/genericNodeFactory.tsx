@@ -17,7 +17,7 @@ export class GenericNodeFactory extends AbstractReactFactory<GenericNodeModel, D
         this._globalState = globalState;
     }
 
-    generateReactWidget(event:  GenerateWidgetEvent<GenericNodeModel>): JSX.Element {
+    generateReactWidget(event: GenerateWidgetEvent<GenericNodeModel>): JSX.Element {
         return <GenericNodeWidget node={event.model} globalState={this._globalState} />;
     }
 

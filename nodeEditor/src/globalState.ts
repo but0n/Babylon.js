@@ -3,7 +3,7 @@ import { Nullable } from "babylonjs/types"
 import { Observable } from 'babylonjs/Misc/observable';
 import { StandardNodeModel } from './components/diagram/standardNodeModel';
 import { LogEntry } from './components/log/logComponent';
-import { NodeModel } from "@projectstorm/react-diagrams";
+import { NodeModel, DiagramEngine } from "@projectstorm/react-diagrams";
 import { INodeLocationInfo } from './nodeLocationInfo';
 import { NodeMaterialBlock } from 'babylonjs/Materials/Node/nodeMaterialBlock';
 import { PreviewMeshType } from './components/preview/previewMeshType';
@@ -13,6 +13,7 @@ export class GlobalState {
     nodeMaterial: NodeMaterial;
     hostElement: HTMLElement;
     hostDocument: HTMLDocument;
+    diagramEngine: DiagramEngine;
     onSelectionChangedObservable = new Observable<Nullable<StandardNodeModel>>();
     onRebuildRequiredObservable = new Observable<void>();
     onResetRequiredObservable = new Observable<Nullable<INodeLocationInfo[]>>();

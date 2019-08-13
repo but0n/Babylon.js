@@ -6,6 +6,7 @@ import { NodeMaterialConnectionPoint } from 'babylonjs/Materials/Node/nodeMateri
 import { NodeMaterialBlockConnectionPointTypes } from 'babylonjs/Materials/Node/nodeMaterialBlockConnectionPointTypes';
 import { DefaultPortWidget } from './port/defaultPortWidget';
 import { BlockTools } from '../../blockTools';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 
 
 export class PortHelper {
@@ -35,7 +36,7 @@ export class PortHelper {
         };
     }
 
-    public static GenerateOutputPorts(node: Nullable<StandardNodeModel>, ignoreLabel: boolean) {
+    public static GenerateOutputPorts(node: Nullable<StandardNodeModel>, ignoreLabel: boolean, engine: DiagramEngine) {
         if (!node) {
             return new Array<JSX.Element>();
         }
@@ -58,7 +59,7 @@ export class PortHelper {
                         <div className="output-port-plug">
                             <div className="output-port-border">                                
                             </div>
-                            <DefaultPortWidget key={key} name={port.getOptions().name} node={node} style={style} />
+                            <DefaultPortWidget engine={engine} key={key} name={port.getOptions().name} node={node} style={style} direction="out"/>
                             <div className="output-port-type"> 
                                 {
                                     typeIndicator
@@ -73,7 +74,7 @@ export class PortHelper {
         return outputPorts;
     }
 
-    public static GenerateInputPorts(node: Nullable<StandardNodeModel>, includeOnly?: string[], ignoreLabel: boolean = false) {
+    public static GenerateInputPorts(node: Nullable<StandardNodeModel>, includeOnly: string[] | null, ignoreLabel: boolean, engine: DiagramEngine) {
         if (!node) {
             return new Array<JSX.Element>();
         }
@@ -90,7 +91,7 @@ export class PortHelper {
                             <div className="input-port-plug">
                                 <div className="input-port-border">                                
                                 </div>
-                                <DefaultPortWidget key={key} name={port.getOptions().name} node={node} style={style}/>
+                                <DefaultPortWidget engine={engine} key={key} name={port.getOptions().name} node={node} style={style} direction="in"/>
                                 <div className="input-port-type"> 
                                     {
                                         typeIndicator

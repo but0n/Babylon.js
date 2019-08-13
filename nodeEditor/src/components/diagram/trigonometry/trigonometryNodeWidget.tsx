@@ -26,7 +26,7 @@ export class TrigonometryNodeWidget extends React.Component<ITrigonometryNodeWid
         this.state = {};
 
         if (this.props.node) {
-            this.props.node.addListener({
+            this.props.node.registerListener({
                 selectionChanged: () => {
                     let selected = (this.props.node as any).selected;
                     this.props.globalState.onSelectionChangedObservable.notifyObservers(selected ? this.props.node : null);
@@ -36,8 +36,8 @@ export class TrigonometryNodeWidget extends React.Component<ITrigonometryNodeWid
     }
 
     render() {
-        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, false);        
-        var inputPorts = PortHelper.GenerateInputPorts(this.props.node);
+        var outputPorts = PortHelper.GenerateOutputPorts(this.props.node, false, this.props.globalState.diagramEngine);        
+        var inputPorts = PortHelper.GenerateInputPorts(this.props.node, null, false, this.props.globalState.diagramEngine);
 
         let trigonometryBlock = this.props.node!.trigonometryBlock;
 

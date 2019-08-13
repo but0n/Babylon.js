@@ -1,6 +1,6 @@
 
 import * as dagre from "dagre";
-import { DiagramModel } from 'storm-react-diagrams/dist/@types/src/models/DiagramModel';
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 export class GraphHelper {
     public static DistributeGraph(model: DiagramModel) {
@@ -16,7 +16,7 @@ export class GraphHelper {
         });
         edges.forEach(edge => {
             if (edge.from && edge.to) {
-                graph.setEdge(edge.from.id, edge.to.id);
+                graph.setEdge(edge.from.getID(), edge.to.getID());
             }
         });
         //auto-distribute
@@ -28,13 +28,13 @@ export class GraphHelper {
         let output = [];
 
         // dagre compatible format
-        for (var nodeName in model.nodes) {
-            let node = model.nodes[nodeName];
+        for (var nodeName in model.getNodes()) {
+            let node = model.getNodes()[nodeName];
             let size = {
                 width: node.width | 200,
                 height: node.height | 100
             };
-            output.push({ id: node.id, metadata: { ...size, id: node.id } });
+            output.push({ id: node.getID(), metadata: { ...size, id: node.getID() } });
         }
 
         return output;
@@ -45,12 +45,12 @@ export class GraphHelper {
         // we check are there both from and to nodes in the model. Sometimes links can be detached
         let output = [];
 
-        for (var linkName in model.links) {
-            let link = model.links[linkName];
+        for (var linkName in model.getLinks()) {
+            let link = model.getLinks()[linkName];
 
             output.push({
-                from: link.sourcePort!.parent,
-                to: link.targetPort!.parent
+                from: link.getSourcePort().getParent(),
+                to: link.getTargetPort().getParent()
             });
         }
 
