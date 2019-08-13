@@ -1,7 +1,6 @@
-import {
+import createEngine, {
     DiagramEngine,
     DiagramModel,
-    DiagramWidget,
     LinkModel
 } from "@projectstorm/react-diagrams";
 
@@ -16,7 +15,7 @@ import { NodeListComponent } from './components/nodeList/nodeListComponent';
 import { PropertyTabComponent } from './components/propertyTab/propertyTabComponent';
 import { Portal } from './portal';
 import { TextureNodeFactory } from './components/diagram/texture/textureNodeFactory';
-import { DefaultNodeModel } from './components/diagram/defaultNodeModel';
+import { StandardNodeModel } from './components/diagram/standardNodeModel';
 import { TextureNodeModel } from './components/diagram/texture/textureNodeModel';
 import { DefaultPortModel } from './components/diagram/port/defaultPortModel';
 import { InputNodeFactory } from './components/diagram/input/inputNodeFactory';
@@ -43,6 +42,7 @@ import { PreviewMeshControlComponent } from './components/preview/previewMeshCon
 import { TrigonometryNodeFactory } from './components/diagram/trigonometry/trigonometryNodeFactory';
 import { TrigonometryBlock } from 'babylonjs/Materials/Node/Blocks/trigonometryBlock';
 import { TrigonometryNodeModel } from './components/diagram/trigonometry/trigonometryNodeModel';
+import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 require("storm-react-diagrams/dist/style.min.css");
 require("./main.scss");
@@ -69,11 +69,11 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
     private _leftWidth = DataStorage.ReadNumber("LeftWidth", 200);
     private _rightWidth = DataStorage.ReadNumber("RightWidth", 300);
 
-    private _nodes = new Array<DefaultNodeModel>();
+    private _nodes = new Array<StandardNodeModel>();
     private _blocks = new Array<NodeMaterialBlock>();
 
     private _previewManager: PreviewManager;
-    private _copiedNode: Nullable<DefaultNodeModel> = null;
+    private _copiedNode: Nullable<StandardNodeModel> = null;
     private _mouseLocationX = 0;
     private _mouseLocationY = 0;
 
@@ -96,7 +96,7 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         }
 
         // Create new node in the graph
-        var newNode: DefaultNodeModel;
+        var newNode: StandardNodeModel;
        
         if (options.nodeMaterialBlock instanceof TextureBlock) {
             newNode = new TextureNodeModel();
@@ -137,9 +137,9 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
 
     componentDidMount() {
         if (this.props.globalState.hostDocument) {
-            var widget = (this.refs["test"] as DiagramWidget);
+            var widget = (this.refs["test"] as CanvasWidget);
             widget.setState({ document: this.props.globalState.hostDocument })
-            this.props.globalState.hostDocument!.addEventListener("keyup", widget.onKeyUpPointer as any, false);
+            this.props.globalState.hostDocument!.addEventListener("keyup", widget.keyUp, false);
 
             this._previewManager = new PreviewManager(this.props.globalState.hostDocument.getElementById("preview-canvas") as HTMLCanvasElement, this.props.globalState);
         }
@@ -147,8 +147,8 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
 
     componentWillUnmount() {
         if (this.props.globalState.hostDocument) {
-            var widget = (this.refs["test"] as DiagramWidget);
-            this.props.globalState.hostDocument!.removeEventListener("keyup", widget.onKeyUpPointer as any, false);
+            var widget = (this.refs["test"] as CanvasWidget );
+            this.props.globalState.hostDocument!.removeEventListener("keyup", widget.keyUp, false);
         }
 
         this._previewManager.dispose();
@@ -158,15 +158,15 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         super(props);
 
         // setup the diagram engine
-        this._engine = new DiagramEngine();
-        this._engine.installDefaultFactories()
-        this._engine.registerNodeFactory(new GenericNodeFactory(this.props.globalState));
-        this._engine.registerNodeFactory(new TextureNodeFactory(this.props.globalState));
-        this._engine.registerNodeFactory(new LightNodeFactory(this.props.globalState));
-        this._engine.registerNodeFactory(new InputNodeFactory(this.props.globalState));
-        this._engine.registerNodeFactory(new RemapNodeFactory(this.props.globalState));
-        this._engine.registerNodeFactory(new TrigonometryNodeFactory(this.props.globalState));
-        this._engine.registerLinkFactory(new AdvancedLinkFactory());
+        this._engine = createEngine();
+
+        this._engine.getLayerFactories().registerFactory(new GenericNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new TextureNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new LightNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new InputNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new RemapNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new TrigonometryNodeFactory(this.props.globalState));
+        this._engine.getLayerFactories().registerFactory(new AdvancedLinkFactory());
 
         this.props.globalState.onRebuildRequiredObservable.add(() => {
             if (this.props.globalState.nodeMaterial) {
@@ -204,12 +204,12 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
             }
 
             if (evt.key === "c") {
-                let selectedItems = this._engine.diagramModel.getSelectedItems();
+                let selectedItems = this._engine.getModel().getSelectedEntities();
                 if (!selectedItems.length) {
                     return;
                 }
     
-                let selectedItem = selectedItems[0] as DefaultNodeModel;
+                let selectedItem = selectedItems[0] as StandardNodeModel;
     
                 if (!selectedItem.block) {
                     return;
@@ -230,13 +230,12 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
                 
                 let newNode = this.createNodeFromObject({ nodeMaterialBlock: clone });
                 const rootElement = this.props.globalState.hostDocument!.querySelector(".diagram-container") as HTMLDivElement;
-                const zoomLevel = this._engine.diagramModel.getZoomLevel() / 100.0;
+                const zoomLevel = this._engine.getModel().getZoomLevel() / 100.0;
 
-                let x = (this._mouseLocationX - rootElement.offsetLeft - this._engine.diagramModel.getOffsetX() - this.NodeWidth) / zoomLevel;
-                let y = (this._mouseLocationY - rootElement.offsetTop - this._engine.diagramModel.getOffsetY() - 20) / zoomLevel;
+                let x = (this._mouseLocationX - rootElement.offsetLeft - this._engine.getModel().getOffsetX() - this.NodeWidth) / zoomLevel;
+                let y = (this._mouseLocationY - rootElement.offsetTop - this._engine.getModel().getOffsetY() - 20) / zoomLevel;
 
-                newNode.x = x;
-                newNode.y = y;
+                newNode.setPosition(x, y);
 
                 this._engine.repaintCanvas();
             }
@@ -247,16 +246,16 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
     }
 
     zoomToFit(retry = 0) {
-        const xFactor = this._engine.canvas.clientWidth / this._engine.canvas.scrollWidth;
-        const yFactor = this._engine.canvas.clientHeight / this._engine.canvas.scrollHeight;
+        const xFactor = this._engine.getCanvas().clientWidth / this._engine.getCanvas().scrollWidth;
+        const yFactor = this._engine.getCanvas().clientHeight / this._engine.getCanvas().scrollHeight;
         const zoomFactor = xFactor < yFactor ? xFactor : yFactor;
 
         if (zoomFactor === 1) {
             return;
         }
 
-        this._engine.diagramModel.setZoomLevel(this._engine.diagramModel.getZoomLevel() * zoomFactor);
-        this._engine.diagramModel.setOffset(0, 0);
+        this._engine.getModel().setZoomLevel(this._engine.getModel().getZoomLevel() * zoomFactor);
+        this._engine.getModel().setOffset(0, 0);
         this._engine.repaintCanvas();
         retry++;
         if (retry < 4) {
@@ -333,8 +332,7 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
                             let nodeModel = this.addValueNode(BlockTools.GetStringFromConnectionNodeType(input.connection!.type));
                             let link = nodeModel.ports.output.link(input);
 
-                            nodeModel.x = e.link.points[1].x - this.NodeWidth;
-                            nodeModel.y = e.link.points[1].y;
+                            nodeModel.setPosition(e.link.points[1].x - this.NodeWidth, e.link.points[1].y);
 
                             setTimeout(() => {
                                 this._model.addLink(link);
@@ -413,7 +411,7 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
                 this._model.addAll(...this._toAdd);
             }
             this._toAdd = null;
-            this._engine.setDiagramModel(this._model);
+            this._engine.setModel(this._model);
 
             this.forceUpdate();
 
@@ -425,10 +423,10 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         if (!locations) {
             let nodes = GraphHelper.DistributeGraph(this._model);
             nodes.forEach(node => {
-                for (var nodeName in this._model.nodes) {
-                    let modelNode = this._model.nodes[nodeName];
+                for (var nodeName in this._model.getNodes()) {
+                    let modelNode = this._model.getNodes()[nodeName];
 
-                    if (modelNode.id === node.id) {
+                    if (modelNode.getID() === node.id) {
                         modelNode.setPosition(node.x - node.width / 2, node.y - node.height / 2);
                         return;
                     }
@@ -502,10 +500,10 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
         };
 
         if (nodeModel) {
-            const zoomLevel = this._engine.diagramModel.getZoomLevel() / 100.0;
+            const zoomLevel = this._engine.getModel().getZoomLevel() / 100.0;
 
-            let x = (event.clientX - event.currentTarget.offsetLeft - this._engine.diagramModel.getOffsetX() - this.NodeWidth) / zoomLevel;
-            let y = (event.clientY - event.currentTarget.offsetTop - this._engine.diagramModel.getOffsetY() - 20) / zoomLevel;
+            let x = (event.clientX - event.currentTarget.offsetLeft - this._engine.getModel().getOffsetX() - this.NodeWidth) / zoomLevel;
+            let y = (event.clientY - event.currentTarget.offsetTop - this._engine.getModel().getOffsetY() - 20) / zoomLevel;
             nodeModel.setPosition(x, y);
         }
 
@@ -542,12 +540,11 @@ export class GraphEditor extends React.Component<IGraphEditorProps> {
                             event.preventDefault();
                         }}
                     >
-                        <DiagramWidget className="diagram" deleteKeys={[46]} ref={"test"} 
-                        smart
-                        allowLooseLinks={false}
-                        inverseZoom={true} 
-                        diagramEngine={this._engine} 
-                        maxNumberPointsPerLink={0} />
+                        <CanvasWidget 
+                            className="diagram" 
+                            ref={"test"} 
+                            engine={this._engine} 
+                        />
                     </div>
 
                     <div id="rightGrab"

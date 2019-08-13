@@ -8,7 +8,7 @@ import { DefaultPortModel } from './port/defaultPortModel';
 /**
  * Generic node model which stores information about a node editor block
  */
-export class DefaultNodeModel extends NodeModel {
+export class StandardNodeModel extends NodeModel {
 	/**
 	 * The babylon block this node represents
 	 */
@@ -20,10 +20,10 @@ export class DefaultNodeModel extends NodeModel {
 	 * Constructs the node model
 	 */
     constructor(key: string) {
-        super(key);
+        super({name: key});
     }
 
-    prepare(options: NodeCreationOptions, nodes: Array<DefaultNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
+    prepare(options: NodeCreationOptions, nodes: Array<StandardNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
         this.block = options.nodeMaterialBlock || null;
 
         if (!options.nodeMaterialBlock) {

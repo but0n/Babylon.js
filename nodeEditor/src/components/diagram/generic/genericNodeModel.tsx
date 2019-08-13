@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Nullable } from 'babylonjs/types';
 import { Vector2, Vector3, Vector4, Matrix } from 'babylonjs/Maths/math';
-import { DefaultNodeModel } from '../defaultNodeModel';
-import { DiagramModel } from 'storm-react-diagrams/dist/@types/src/models/DiagramModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GraphEditor, NodeCreationOptions } from '../../../graphEditor';
 import { GlobalState } from '../../../globalState';
 import { TextLineComponent } from '../../../sharedComponents/textLineComponent';
@@ -10,11 +9,12 @@ import { LineContainerComponent } from '../../../sharedComponents/lineContainerC
 import { TextInputLineComponent } from '../../../sharedComponents/textInputLineComponent';
 import { CheckBoxLineComponent } from '../../../sharedComponents/checkBoxLineComponent';
 import { TransformBlock } from 'babylonjs/Materials/Node/Blocks/transformBlock';
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 /**
  * Generic node model which stores information about a node editor block
  */
-export class GenericNodeModel extends DefaultNodeModel {
+export class GenericNodeModel extends StandardNodeModel {
 	/**
 	 * Vector2 for the node if it exists
 	 */
@@ -39,7 +39,7 @@ export class GenericNodeModel extends DefaultNodeModel {
         super("generic");
     }
 
-    prepare(options: NodeCreationOptions, nodes: Array<DefaultNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
+    prepare(options: NodeCreationOptions, nodes: Array<StandardNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
         super.prepare(options, nodes, model, graphEditor);
     }
 

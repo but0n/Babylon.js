@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DefaultNodeModel } from '../defaultNodeModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GlobalState } from '../../../globalState';
 import { RemapPropertyTabComponentProps } from './remapNodePropertyComponent';
 import { RemapBlock } from 'babylonjs/Materials/Node/Blocks/remapBlock';
@@ -7,7 +7,7 @@ import { RemapBlock } from 'babylonjs/Materials/Node/Blocks/remapBlock';
 /**
  * Generic node model which stores information about a node editor block
  */
-export class RemapNodeModel extends DefaultNodeModel {
+export class RemapNodeModel extends StandardNodeModel {
 
     public get remapBlock(): RemapBlock {
         return this.block as RemapBlock;

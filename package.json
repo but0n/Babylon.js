@@ -82,6 +82,7 @@
         "mocha": "^5.2.0",
         "node-sass": "^4.10.0",
         "plugin-error": "^1.0.1",
+        "@projectstorm/react-core": "^1.2.11",
         "@projectstorm/react-diagrams": "^6.0.0-beta.1",
         "prompt": "^1.0.0",
         "re-resizable": "~4.9.1",

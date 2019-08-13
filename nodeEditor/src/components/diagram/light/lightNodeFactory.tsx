@@ -1,39 +1,24 @@
-import * as SRD from "@projectstorm/react-diagrams";
 import { LightNodeWidget } from "./lightNodeWidget";
 import { LightNodeModel } from "./lightNodeModel";
 import * as React from "react";
 import { GlobalState } from '../../../globalState';
+import { AbstractReactFactory, GenerateWidgetEvent } from '@projectstorm/react-canvas-core';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 
-/**
- * Node factory which creates editor nodes
- */
-export class LightNodeFactory extends SRD.AbstractNodeFactory {
+export class LightNodeFactory extends AbstractReactFactory<LightNodeModel, DiagramEngine> {
     private _globalState: GlobalState;
 
-	/**
-	 * Constructs a LightNodeFactory
-	 */
     constructor(globalState: GlobalState) {
         super("light");
 
         this._globalState = globalState;
     }
 
-	/**
-	 * Generates a node widget
-	 * @param diagramEngine diagram engine
-	 * @param node node to generate
-	 * @returns node widget jsx
-	 */
-    generateReactWidget(diagramEngine: SRD.DiagramEngine, node: LightNodeModel): JSX.Element {
-        return <LightNodeWidget node={node} globalState={this._globalState} />;
+    generateReactWidget(event:  GenerateWidgetEvent<LightNodeModel>): JSX.Element {
+        return <LightNodeWidget node={event.model} globalState={this._globalState} />;
     }
 
-	/**
-	 * Gets a new instance of a node model
-	 * @returns light node model
-	 */
-    getNewInstance() {
+    generateModel() {
         return new LightNodeModel();
     }
 }

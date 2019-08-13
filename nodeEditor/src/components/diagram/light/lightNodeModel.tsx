@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { Nullable } from 'babylonjs/types';
 import { Light } from 'babylonjs/Lights/light';
-import { DefaultNodeModel } from '../defaultNodeModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GlobalState } from '../../../globalState';
 import { LightPropertyTabComponent } from './lightPropertyTabComponent';
 import { NodeCreationOptions, GraphEditor } from '../../../graphEditor';
-import { DiagramModel } from 'storm-react-diagrams/dist/@types/src/models/DiagramModel';
 import { LightBlock } from 'babylonjs/Materials/Node/Blocks/Dual/lightBlock';
+import { DiagramModel } from '@projectstorm/react-diagrams';
 
 /**
  * Light node model which stores information about a node editor block
  */
-export class LightNodeModel extends DefaultNodeModel {
+export class LightNodeModel extends StandardNodeModel {
     private _block: LightBlock;
 
 	/**
@@ -38,7 +38,7 @@ export class LightNodeModel extends DefaultNodeModel {
         );
     }
 
-    prepare(options: NodeCreationOptions, nodes: Array<DefaultNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
+    prepare(options: NodeCreationOptions, nodes: Array<StandardNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
         this._block = options.nodeMaterialBlock as LightBlock;
 
         super.prepare(options, nodes, model, graphEditor);

@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { Nullable } from 'babylonjs/types';
 import { BaseTexture } from 'babylonjs/Materials/Textures/baseTexture';
-import { DefaultNodeModel } from '../defaultNodeModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GlobalState } from '../../../globalState';
 import { TexturePropertyTabComponent } from './texturePropertyTabComponent';
 import { NodeCreationOptions, GraphEditor } from '../../../graphEditor';
-import { DiagramModel } from 'storm-react-diagrams/dist/@types/src/models/DiagramModel';
 import { TextureBlock } from 'babylonjs/Materials/Node/Blocks/Dual/textureBlock';
+import { DiagramModel } from '@projectstorm/react-diagrams-core';
 
 /**
  * Texture node model which stores information about a node editor block
  */
-export class TextureNodeModel extends DefaultNodeModel {
+export class TextureNodeModel extends StandardNodeModel {
     private _block: TextureBlock;
 
 	/**
@@ -38,7 +38,7 @@ export class TextureNodeModel extends DefaultNodeModel {
         );
     }
 
-    prepare(options: NodeCreationOptions, nodes: Array<DefaultNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
+    prepare(options: NodeCreationOptions, nodes: Array<StandardNodeModel>, model: DiagramModel, graphEditor: GraphEditor) {
         this._block = options.nodeMaterialBlock as TextureBlock;
 
         super.prepare(options, nodes, model, graphEditor);

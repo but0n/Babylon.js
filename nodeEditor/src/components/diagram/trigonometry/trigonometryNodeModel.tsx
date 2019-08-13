@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DefaultNodeModel } from '../defaultNodeModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GlobalState } from '../../../globalState';
 import { TrigonometryPropertyTabComponentProps } from './trigonometryNodePropertyComponent';
 import { TrigonometryBlock } from 'babylonjs/Materials/Node/Blocks/trigonometryBlock';
@@ -7,7 +7,7 @@ import { TrigonometryBlock } from 'babylonjs/Materials/Node/Blocks/trigonometryB
 /**
  * Generic node model which stores information about a node editor block
  */
-export class TrigonometryNodeModel extends DefaultNodeModel {
+export class TrigonometryNodeModel extends StandardNodeModel {
 
     public get trigonometryBlock(): TrigonometryBlock {
         return this.block as TrigonometryBlock;

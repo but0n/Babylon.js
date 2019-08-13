@@ -2,7 +2,7 @@
 import * as React from "react";
 import { GlobalState } from '../../globalState';
 import { Nullable } from 'babylonjs/types';
-import { DefaultNodeModel } from '../../components/diagram/defaultNodeModel';
+import { StandardNodeModel } from '../diagram/standardNodeModel';
 import { ButtonLineComponent } from '../../sharedComponents/buttonLineComponent';
 import { LineContainerComponent } from '../../sharedComponents/lineContainerComponent';
 import { StringTools } from '../../stringTools';
@@ -15,7 +15,7 @@ interface IPropertyTabComponentProps {
     globalState: GlobalState;
 }
 
-export class PropertyTabComponent extends React.Component<IPropertyTabComponentProps, { currentNode: Nullable<DefaultNodeModel> }> {
+export class PropertyTabComponent extends React.Component<IPropertyTabComponentProps, { currentNode: Nullable<StandardNodeModel> }> {
 
     constructor(props: IPropertyTabComponentProps) {
         super(props)
@@ -64,8 +64,8 @@ export class PropertyTabComponent extends React.Component<IPropertyTabComponentP
 
             serializationObject.locations.push({
                 blockId: block.uniqueId,
-                x: node.x,
-                y: node.y
+                x: node.getX(),
+                y: node.getY()
             });
         }
 

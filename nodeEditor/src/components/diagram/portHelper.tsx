@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DefaultNodeModel } from './defaultNodeModel';
+import { StandardNodeModel } from './standardNodeModel';
 import { DefaultPortModel } from './port/defaultPortModel';
 import { Nullable } from 'babylonjs/types';
 import { NodeMaterialConnectionPoint } from 'babylonjs/Materials/Node/nodeMaterialBlockConnectionPoint';
@@ -35,14 +35,14 @@ export class PortHelper {
         };
     }
 
-    public static GenerateOutputPorts(node: Nullable<DefaultNodeModel>, ignoreLabel: boolean) {
+    public static GenerateOutputPorts(node: Nullable<StandardNodeModel>, ignoreLabel: boolean) {
         if (!node) {
             return new Array<JSX.Element>();
         }
         let outputPorts = [];
         for (var key in node.ports) {
             let port = node.ports[key] as DefaultPortModel;
-            if (port.position === "output") {
+            if (port.portPosition === "output") {
                 let typeIndicator = this._GetPortTypeIndicator(port.connection!);
 
                 let style = this._GetPortStyle(port.connection!.type);
@@ -58,7 +58,7 @@ export class PortHelper {
                         <div className="output-port-plug">
                             <div className="output-port-border">                                
                             </div>
-                            <DefaultPortWidget key={key} name={port.name} node={node} style={style} />
+                            <DefaultPortWidget key={key} name={port.getOptions().name} node={node} style={style} />
                             <div className="output-port-type"> 
                                 {
                                     typeIndicator
@@ -73,24 +73,24 @@ export class PortHelper {
         return outputPorts;
     }
 
-    public static GenerateInputPorts(node: Nullable<DefaultNodeModel>, includeOnly?: string[], ignoreLabel: boolean = false) {
+    public static GenerateInputPorts(node: Nullable<StandardNodeModel>, includeOnly?: string[], ignoreLabel: boolean = false) {
         if (!node) {
             return new Array<JSX.Element>();
         }
         let inputPorts = [];
         for (var key in node.ports) {
             let port = node.ports[key] as DefaultPortModel;
-            if (port.position === "input") {                
+            if (port.portPosition === "input") {                
                 let typeIndicator = this._GetPortTypeIndicator(port.connection!);
                 let style = this._GetPortStyle(port.connection!.type);
 
-                if (!includeOnly || includeOnly.indexOf(port.name) !== -1) {
+                if (!includeOnly || includeOnly.indexOf(port.getOptions().name) !== -1) {
                     inputPorts.push(
                         <div key={key} className="input-port">
                             <div className="input-port-plug">
                                 <div className="input-port-border">                                
                                 </div>
-                                <DefaultPortWidget key={key} name={port.name} node={node} style={style}/>
+                                <DefaultPortWidget key={key} name={port.getOptions().name} node={node} style={style}/>
                                 <div className="input-port-type"> 
                                     {
                                         typeIndicator

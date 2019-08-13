@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DefaultNodeModel } from '../defaultNodeModel';
+import { StandardNodeModel } from '../standardNodeModel';
 import { GlobalState } from '../../../globalState';
 import { InputPropertyTabComponentProps } from './inputNodePropertyComponent';
 import { InputBlock } from 'babylonjs/Materials/Node/Blocks/Input/inputBlock';
@@ -7,7 +7,7 @@ import { InputBlock } from 'babylonjs/Materials/Node/Blocks/Input/inputBlock';
 /**
  * Generic node model which stores information about a node editor block
  */
-export class InputNodeModel extends DefaultNodeModel {
+export class InputNodeModel extends StandardNodeModel {
 
     public get inputBlock(): InputBlock {
         return this.block as InputBlock;
